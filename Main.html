@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>TIMES OF INDIA ATTENDENCE</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#25d366">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body { font-family: system-ui, Arial, sans-serif; margin: 24px; }
+    .box {
+      padding: 14px 16px;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      max-width: 400px;
+      margin: 20px auto;
+      background: #fff;
+      box-shadow: 0 1px 8px rgba(0,0,0,0.06);
+    }
+    .label { font-size: 14px; color: #444; margin-bottom: 8px; display: block; font-weight: bold; }
+    select, input[type="text"] {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      margin-bottom: 6px;
+      box-sizing: border-box;
+    }
+    ul { margin-top: 15px; padding-left: 0; list-style: none; }
+    li {
+      margin: 6px 0;
+      font-size: 15px;
+      padding: 6px 10px;
+      border-radius: 6px;
+      transition: background 0.2s;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    li:hover { background: #f0f0f0; }
+    .remove {
+      cursor: pointer;
+      font-weight: bold;
+      color: #e63946;
+      background: transparent;
+      border: none;
+      font-size: 14px;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    li:hover .remove { opacity: 1; }
+    .btn {
+      margin-top: 15px;
+      padding: 10px 16px;
+      border-radius: 8px;
+      border: none;
+      background: #25d366;
+      color: #fff;
+      font-size: 15px;
+      cursor: pointer;
+      display: block;
+      width: 100%;
+    }
+    .btn:hover { background: #1da851; }
+    .btn-secondary { background: #007bff; }
+    .btn-secondary:hover { background: #0062cc; }
+    .title {
+      text-align: center;
+      margin: 0 auto 8px;
+      background-color: red;
+      color: white;
+      padding: 8px 10px;
+      border-radius: 8px;
+      max-width: 480px;
+    }
+    .date {
+      text-align: center;
+      margin: 0 auto 10px;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <h1 class="title">COL-D DAY SHIFT ATTENDENCE</h1>
+  <h2 class="date"><u><span id="today"></span></u></h2>
+
+  <script>
+    // Render current date and update at midnight (for website)
+    function renderToday() {
+      const now = new Date();
+      const today = now.toLocaleDateString("en-IN", {
+        day: "2-digit",
+        month: "long",
+        year: "numeric"
+      });
+      document.getElementById("today").textContent = today;
+    }
+    function scheduleMidnightUpdate() {
+      const now = new Date();
+      const next = new Date(now);
+      next.setHours(24, 0, 0, 0);
+      const timeUntilMidnight = next - now;
+      setTimeout(() => {
+        renderToday();
+        scheduleMidnightUpdate();
+      }, timeUntilMidnight);
+    }
+    renderToday();
+    scheduleMidnightUpdate();
+  </script>
+
+  <!-- FIRST DROPDOWN (WORKERS) -->
+  <div class="box">
+    <label class="label" for="names1"></label>
+    <select id="names1">
+      <option value="" selected disabled></option>
+      <option>Mr. AMIT RAJ</option>
+      <option>Mr. DEVENDER SHARMA</option>
+      <option>Mr. MANISH RAWAT</option>
+      <option>Mr. LALLU RAM YADAV</option>
+      <option>Mr. BISHAMBHAR SINGH</option>
+	  <option>Mr. JEEVAN SINGH BISHT</option>
+		<option>Mr. UDAY SINGH</option>
+		<option>Mr. YOGESH SHARMA</option>
+		<option>Mr. ARUN PANDEY</option>
+		<option>Mr. INDRA BHADRA TIWARI</option>
+		<option>Mr. RAJ KR. SINGH</option>
+		<option>Mr. SACHIN CHAUHAN</option>
+		<option>Mr. RAJIV SINGH</option>
+		<option>Mr. DHARAMVEER</option>
+		<option>Mr. RAJESH BAGHEL</option>
+		<option>Mr. KAPIL SHARMA</option>
+		<option>Mr. KAVINDER KUMAR</option>
+		<option>Mr. RAM GOPAL</option>
+		<option>Mr. SUNIL KUMAR SINGH</option>
+		<option>Mr. DEVENDRA KUMAR</option>
+		<option>Mr. D.K. DUBEY</option>
+		<option>Mr. ASHOK KUMAR</option>
+		<option>Mr. VIVEK TIWARI</option>
+    </select>
+    <ul id="list1"></ul>
+  </div>
+
+  <!-- SECOND DROPDOWN (M/M) -->
+  <div class="box">
+    <label class="label" for="names2">M/M</label>
+    <select id="names2">
+      <option value="" selected disabled>— Select M/M —</option>
+      <option>Mr. ASHOK KUMAR SUKLA</option>
+      <option>Mr. AMARNATH PATHAK</option>
+    </select>
+    <ul id="list2"></ul>
+  </div>
+
+  <!-- THIRD (N/P) EDITABLE WITH Mr. PREFIX -->
+  <div class="box">
+    <label class="label" for="nameInput3">N/P</label>
+    <input type="text" id="nameInput3" placeholder="Type a name" />
+    <button class="btn btn-secondary" onclick="addMP()">Add</button>
+    <ul id="list3"></ul>
+  </div>
+
+  <!-- SINGLE SEND ALL BUTTON -->
+  <div class="box" style="max-width: 420px;">
+    <button class="btn" onclick="sendAll()">Send All to WhatsApp</button>
+  </div>
+
+  <script>
+    const selectedSet1 = new Set();
+    const selectedSet2 = new Set();
+    const selectedSet3 = new Set();
+
+    function setupDropdown(selectId, listId, selectedSet) {
+      const select = document.getElementById(selectId);
+      const list = document.getElementById(listId);
+
+      function refreshList() {
+        list.innerHTML = "";
+        let i = 1;
+        selectedSet.forEach(name => {
+          const li = document.createElement('li');
+          li.textContent = `${i}. ${name}`;
+          const removeBtn = document.createElement('button');
+          removeBtn.className = 'remove';
+          removeBtn.textContent = '✕';
+          removeBtn.onclick = () => {
+            selectedSet.delete(name);
+            refreshList();
+          };
+          li.appendChild(removeBtn);
+          list.appendChild(li);
+          i++;
+        });
+      }
+
+      select.addEventListener('change', () => {
+        const name = select.value;
+        if (!name || selectedSet.has(name)) {
+          select.value = '';
+          return;
+        }
+        selectedSet.add(name);
+        refreshList();
+        select.value = '';
+      });
+    }
+    setupDropdown('names1', 'list1', selectedSet1);
+    setupDropdown('names2', 'list2', selectedSet2);
+
+    function addMP() {
+      const input = document.getElementById('nameInput3');
+      let name = input.value.trim();
+      if (!name) return;
+      if (!name.startsWith("Mr. ")) name = "Mr. " + name;
+      if (selectedSet3.has(name)) return;
+      selectedSet3.add(name);
+      refreshList3();
+      input.value = "";
+    }
+    function refreshList3() {
+      const list = document.getElementById('list3');
+      list.innerHTML = "";
+      let i = 1;
+      selectedSet3.forEach(name => {
+        const li = document.createElement('li');
+        li.textContent = `${i}. ${name}`;
+        const removeBtn = document.createElement('button');
+        removeBtn.className = 'remove';
+        removeBtn.textContent = '✕';
+        removeBtn.onclick = () => {
+          selectedSet3.delete(name);
+          refreshList3();
+        };
+        li.appendChild(removeBtn);
+        list.appendChild(li);
+        i++;
+      });
+    }
+
+    function sendAll() {
+      let message = "";
+
+      // Heading
+      message += "          COL-D DAY SHIFT ATTENDENCE\n";
+
+      // Add date to WhatsApp message
+      const now = new Date();
+      const today = now.toLocaleDateString("en-IN", {
+        day: "2-digit",
+        month: "long",
+        year: "numeric"
+      });
+      message += "          " + today + "\n\n";
+
+      // Workers
+      if (selectedSet1.size > 0) {
+        let i = 1;
+        selectedSet1.forEach(name => { message += `${i}. ${name}\n`; i++; });
+        message += "\n";
+      }
+
+      // M/M
+      if (selectedSet2.size > 0) {
+        message += "M/M:\n";
+        let i = 1;
+        selectedSet2.forEach(name => { message += `${i}. ${name}\n`; i++; });
+        message += "\n";
+      }
+
+      // M/P
+      if (selectedSet3.size > 0) {
+        message += "N/P:\n";
+        let i = 1;
+        selectedSet3.forEach(name => { message += `${i}. ${name}\n`; i++; });
+      }
+
+      const hasAny = selectedSet1.size + selectedSet2.size + selectedSet3.size > 0;
+      if (!hasAny) {
+        alert("No names selected.");
+        return;
+      }
+
+      const encodedMsg = encodeURIComponent(message);
+      const url = `https://wa.me/?text=${encodedMsg}`;
+      window.open(url, "_blank");
+    }
+
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("sw.js")
+        .then(() => console.log("Service Worker Registered"));
+    }
+  </script>
+</body>
+</html>
