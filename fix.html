@@ -108,32 +108,39 @@
     scheduleMidnightUpdate();
   </script>
 
+  <!-- FIRST DROPDOWN (WORKERS) -->
   <div class="box">
-    <label class="label" for="names1"></label>
+    <label class="label" for="names1">Select Worker</label>
     <select id="names1">
-      <option value="" selected disabled></option>
-    <option>Mr. JEEVAN SINGH BISHT</option>
-		<option>Mr. UDAY SINGH</option>
-		<option>Mr. YOGESH SHARMA</option>
-		<option>Mr. ARUN PANDEY</option>
-		<option>Mr. INDRA BHADRA TIWARI</option>
-		<option>Mr. RAJ KR. SINGH</option>
-		<option>Mr. SACHIN CHAUHAN</option>
-		<option>Mr. RAJIV SINGH</option>
-		<option>Mr. DHARAMVEER</option>
-		<option>Mr. RAJESH BAGHEL</option>
-		<option>Mr. KAPIL SHARMA</option>
-		<option>Mr. KAVINDER KUMAR</option>
-		<option>Mr. RAM GOPAL</option>
-		<option>Mr. SUNIL KUMAR SINGH</option>
-		<option>Mr. DEVENDRA KUMAR</option>
-		<option>Mr. D.K. DUBEY</option>
-		<option>Mr. ASHOK KUMAR</option>
-		<option>Mr. VIVEK TIWARI</option>
+      <option value="" selected disabled>-- Select Worker --</option>
+      <option>Mr. AMIT RAJ</option>
+      <option>Mr. DEVENDER SHARMA</option>
+      <option>Mr. MANISH RAWAT</option>
+      <option>Mr. LALLU RAM YADAV</option>
+      <option>Mr. BISHAMBHAR SINGH</option>
+      <option>Mr. JEEVAN SINGH BISHT</option>
+      <option>Mr. UDAY SINGH</option>
+      <option>Mr. YOGESH SHARMA</option>
+      <option>Mr. ARUN PANDEY</option>
+      <option>Mr. INDRA BHADRA TIWARI</option>
+      <option>Mr. RAJ KR. SINGH</option>
+      <option>Mr. SACHIN CHAUHAN</option>
+      <option>Mr. RAJIV SINGH</option>
+      <option>Mr. DHARAMVEER</option>
+      <option>Mr. RAJESH BAGHEL</option>
+      <option>Mr. KAPIL SHARMA</option>
+      <option>Mr. KAVINDER KUMAR</option>
+      <option>Mr. RAM GOPAL</option>
+      <option>Mr. SUNIL KUMAR SINGH</option>
+      <option>Mr. DEVENDRA KUMAR</option>
+      <option>Mr. D.K. DUBEY</option>
+      <option>Mr. ASHOK KUMAR</option>
+      <option>Mr. VIVEK TIWARI</option>
     </select>
     <ul id="list1"></ul>
   </div>
 
+  <!-- SECOND DROPDOWN (M/M) -->
   <div class="box">
     <label class="label" for="names2">M/M</label>
     <select id="names2">
@@ -144,6 +151,7 @@
     <ul id="list2"></ul>
   </div>
 
+  <!-- THIRD (N/P) EDITABLE WITH Mr. PREFIX -->
   <div class="box">
     <label class="label" for="nameInput3">N/P</label>
     <input type="text" id="nameInput3" placeholder="Type a name" />
@@ -151,15 +159,18 @@
     <ul id="list3"></ul>
   </div>
 
+  <!-- SINGLE SEND ALL BUTTON -->
   <div class="box" style="max-width: 420px;">
     <button class="btn" onclick="sendAll()">Send All to WhatsApp</button>
   </div>
 
   <script>
     const selectedSet1 = new Set(), selectedSet2 = new Set(), selectedSet3 = new Set();
+
     function setupDropdown(selectId, listId, selectedSet) {
       const select = document.getElementById(selectId);
       const list = document.getElementById(listId);
+
       function refreshList() {
         list.innerHTML = "";
         let i = 1;
@@ -178,6 +189,7 @@
           i++;
         });
       }
+
       select.addEventListener('change', () => {
         const name = select.value;
         if (!name || selectedSet.has(name)) {
@@ -191,6 +203,7 @@
     }
     setupDropdown('names1', 'list1', selectedSet1);
     setupDropdown('names2', 'list2', selectedSet2);
+
     function addMP() {
       const input = document.getElementById('nameInput3');
       let name = input.value.trim();
@@ -263,4 +276,3 @@
   </script>
 </body>
 </html>
-
