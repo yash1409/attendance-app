@@ -1,0 +1,16 @@
+{
+  "name": "COL-D Day Shift Attendance",
+  "short_name": "Attendance",
+  "description": "Internal attendance app for COL-D team",
+  "start_url": "./fix.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#25d366",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "96x96",
+      "type": "image/png"
+    }
+  ]
+}
