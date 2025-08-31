@@ -108,7 +108,6 @@
     scheduleMidnightUpdate();
   </script>
 
-  <!-- FIRST DROPDOWN (WORKERS) -->
   <div class="box">
     <label class="label" for="names1">Select Worker</label>
     <select id="names1">
@@ -140,7 +139,6 @@
     <ul id="list1"></ul>
   </div>
 
-  <!-- SECOND DROPDOWN (M/M) -->
   <div class="box">
     <label class="label" for="names2">M/M</label>
     <select id="names2">
@@ -151,7 +149,6 @@
     <ul id="list2"></ul>
   </div>
 
-  <!-- THIRD (N/P) EDITABLE WITH Mr. PREFIX -->
   <div class="box">
     <label class="label" for="nameInput3">N/P</label>
     <input type="text" id="nameInput3" placeholder="Type a name" />
@@ -159,37 +156,37 @@
     <ul id="list3"></ul>
   </div>
 
-  <!-- SINGLE SEND ALL BUTTON -->
   <div class="box" style="max-width: 420px;">
     <button class="btn" onclick="sendAll()">Send All to WhatsApp</button>
   </div>
 
   <script>
-    const selectedSet1 = new Set(), selectedSet2 = new Set(), selectedSet3 = new Set();
+    const selectedSet1 = new Set();
+    const selectedSet2 = new Set();
+    const selectedSet3 = new Set();
+
+    function refreshList(listId, selectedSet) {
+      const list = document.getElementById(listId);
+      list.innerHTML = "";
+      let i = 1;
+      selectedSet.forEach(name => {
+        const li = document.createElement('li');
+        li.textContent = `${i}. ${name}`;
+        const removeBtn = document.createElement('button');
+        removeBtn.className = 'remove';
+        removeBtn.textContent = '✕';
+        removeBtn.onclick = () => {
+          selectedSet.delete(name);
+          refreshList(listId, selectedSet);
+        };
+        li.appendChild(removeBtn);
+        list.appendChild(li);
+        i++;
+      });
+    }
 
     function setupDropdown(selectId, listId, selectedSet) {
       const select = document.getElementById(selectId);
-      const list = document.getElementById(listId);
-
-      function refreshList() {
-        list.innerHTML = "";
-        let i = 1;
-        selectedSet.forEach(name => {
-          const li = document.createElement('li');
-          li.textContent = `${i}. ${name}`;
-          const removeBtn = document.createElement('button');
-          removeBtn.className = 'remove';
-          removeBtn.textContent = '✕';
-          removeBtn.onclick = () => {
-            selectedSet.delete(name);
-            refreshList();
-          };
-          li.appendChild(removeBtn);
-          list.appendChild(li);
-          i++;
-        });
-      }
-
       select.addEventListener('change', () => {
         const name = select.value;
         if (!name || selectedSet.has(name)) {
@@ -197,10 +194,11 @@
           return;
         }
         selectedSet.add(name);
-        refreshList();
+        refreshList(listId, selectedSet);
         select.value = '';
       });
     }
+
     setupDropdown('names1', 'list1', selectedSet1);
     setupDropdown('names2', 'list2', selectedSet2);
 
@@ -211,28 +209,10 @@
       if (!name.startsWith("Mr. ")) name = "Mr. " + name;
       if (selectedSet3.has(name)) return;
       selectedSet3.add(name);
-      refreshList3();
+      refreshList('list3', selectedSet3);
       input.value = "";
     }
-    function refreshList3() {
-      const list = document.getElementById('list3');
-      list.innerHTML = "";
-      let i = 1;
-      selectedSet3.forEach(name => {
-        const li = document.createElement('li');
-        li.textContent = `${i}. ${name}`;
-        const removeBtn = document.createElement('button');
-        removeBtn.className = 'remove';
-        removeBtn.textContent = '✕';
-        removeBtn.onclick = () => {
-          selectedSet3.delete(name);
-          refreshList3();
-        };
-        li.appendChild(removeBtn);
-        list.appendChild(li);
-        i++;
-      });
-    }
+
     function sendAll() {
       let message = "          COL-D DAY SHIFT ATTENDENCE\n";
       const now = new Date();
@@ -242,36 +222,51 @@
         year: "numeric"
       });
       message += "          " + today + "\n\n";
+
       if (selectedSet1.size > 0) {
+        message += "Workers:\n";
         let i = 1;
-        selectedSet1.forEach(name => { message += `${i}. ${name}\n`; i++; });
+        selectedSet1.forEach(name => {
+          message += `${i}. ${name}\n`;
+          i++;
+        });
         message += "\n";
       }
+
       if (selectedSet2.size > 0) {
         message += "M/M:\n";
         let i = 1;
-        selectedSet2.forEach(name => { message += `${i}. ${name}\n`; i++; });
+        selectedSet2.forEach(name => {
+          message += `${i}. ${name}\n`;
+          i++;
+        });
         message += "\n";
       }
+
       if (selectedSet3.size > 0) {
         message += "N/P:\n";
         let i = 1;
-        selectedSet3.forEach(name => { message += `${i}. ${name}\n`; i++; });
+        selectedSet3.forEach(name => {
+          message += `${i}. ${name}\n`;
+          i++;
+        });
       }
-      const hasAny = selectedSet1.size + selectedSet2.size + selectedSet3.size > 0;
-      if (!hasAny) {
+
+      const totalSelected = selectedSet1.size + selectedSet2.size + selectedSet3.size;
+      if (totalSelected === 0) {
         alert("No names selected.");
         return;
       }
+
       const encodedMsg = encodeURIComponent(message);
       const url = `https://wa.me/?text=${encodedMsg}`;
       window.open(url, "_blank");
     }
 
-    // Register service worker
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.register("sw.js")
-        .then(() => console.log("Service Worker Registered"));
+        .then(() => console.log("Service Worker Registered"))
+        .catch(err => console.error("Service Worker registration failed:", err));
     }
   </script>
 </body>
